@@ -36,8 +36,8 @@ Your Resume (PDF)
 RAG-Ai-Resume-Analyzer-main/
 │
 ├── backend/                        # Main application code
-│   ├── main.py                     # ✅ Entry point — run this!
-│   ├── setup_vector_db.py          # ⚙️  Sets up Qdrant vector database (run once)
+│   ├── main.py                     # ✅ Entry point — run this! (auto-initializes vector DB)
+│   ├── setup_vector_db.py          # ⚙️  Contains `create_db()` function for Qdrant vector database setup
 │   ├── config.py                   # App configuration & API clients
 │   ├── schemas.py                  # Pydantic data models
 │   └── services/
@@ -200,11 +200,7 @@ data/
 
 ---
 
-### Step 7 — Initialize the Vector Database
-
-This step reads all job description files from `data/roles_data/`, converts them into vector embeddings, and uploads them to your Qdrant cloud database.
-
-> ⚠️ **Run this only once** (or whenever you want to reset/update the knowledge base).
+### Step 7 — Run the Analyzer!
 
 From the project root, navigate into the `backend/` folder:
 
@@ -215,28 +211,12 @@ cd backend
 Then run:
 
 ```bash
-python setup_vector_db.py
-```
-
-**Expected output:**
-```
-Data collection named roles_knowledge created successfully!!
-638 chunks stored successfully in Qdrant!!
-```
-
-> ✅ If you see this, your vector database is ready to go!
-
----
-
-### Step 8 — Run the Analyzer!
-
-Make sure you are inside the `backend/` folder, then run:
-
-```bash
 python main.py
 ```
 
-The CLI will display all available roles and ask you to pick one:
+> 💡 **Automatic Vector DB Setup:** You don't need to manually run a separate database setup script! On the first run, `main.py` checks if the collection exists and automatically calls the `create_db()` function from `setup_vector_db.py` to embed and upload all job descriptions to Qdrant Cloud.
+
+The CLI will check the vector database, display all available roles, and ask you to pick one:
 
 ```
 ============================================================
@@ -365,7 +345,7 @@ Interview Questions:
 → Type the role name **exactly** as shown (all lowercase), or enter the corresponding **number** from the list instead.
 
 ### ❌ Vector database not set up error
-→ Run `python setup_vector_db.py` from the `backend/` folder **before** running `main.py`. This only needs to be done once.
+→ The database is set up automatically via `create_db()` when running `python main.py`. If you face issues, ensure your `.env` credentials (`QDRANT_URL`, `QDRANT_API_KEY`) are correct and your Qdrant cluster is active.
 
 ### ❌ Qdrant connection error
 → Double-check your `QDRANT_URL` and `QDRANT_API_KEY` in the `.env` file. Make sure there are no extra spaces or quotes.
@@ -395,7 +375,7 @@ cd backend
 python main.py
 ```
 
-> No need to re-run `setup_vector_db.py` unless you want to reset or update the knowledge base.
+> Vector database initialization is automatically handled by `main.py` via `create_db()`.
 
 ---
 
